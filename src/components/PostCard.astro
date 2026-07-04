@@ -1,16 +1,24 @@
 ---
 import { moonPhase, moonSVG, formatDate } from '../utils/moon.js';
+import { typeIcon } from '../utils/icons.js';
 
 const { post } = Astro.props;
 const moon = moonPhase(post.data.date);
-const accent = post.collection === 'music' ? '#a34a2f' : '#e2a23a';
+const accent = post.collection === 'music' ? '#a34a2f'
+  : post.collection === 'design' ? '#c9b48a'
+  : '#e2a23a';
 ---
 
 <div class="card" data-type={post.collection}>
-  <div class="signal">
-    <Fragment set:html={moonSVG(moon.phase, accent)} />
-    <span class="phase-name">{moon.name}</span>
-    <span class="date">{formatDate(post.data.date)}</span>
+  <div class="card-head">
+    <span class="seal">
+      <Fragment set:html={typeIcon(post.collection, accent)} />
+    </span>
+    <div class="signal">
+      <Fragment set:html={moonSVG(moon.phase, accent)} />
+      <span class="phase-name">{moon.name}</span>
+      <span class="date">{formatDate(post.data.date)}</span>
+    </div>
   </div>
   <!-- rest of card -->
 </div>
