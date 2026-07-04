@@ -1,5 +1,12 @@
 ---
+import PostCard from '../components/PostCard.astro';
+import { getCollection } from 'astro:content';
 
+const collections = ['thoughts', 'art', 'music', 'design-work'] as const;
+const posts = (await Promise.all(collections.map((name) => getCollection(name))))
+	.flat()
+	.filter((post) => !post.data.draft)
+	.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 ---
 
 <html lang="en">
@@ -13,5 +20,8 @@
 	</head>
 	<body>
 		<h1>Astro</h1>
+		{posts.map((post) => (
+			<PostCard post={post} />
+		))}
 	</body>
 </html>
