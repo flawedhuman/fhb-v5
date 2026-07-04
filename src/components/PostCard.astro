@@ -93,6 +93,7 @@ const accent = post.collection === 'music' ? '#a34a2f'
     font-size: 10px;
     color: var(--ink-faint);
     letter-spacing: 0.05em;
+    font-family: 'IBM Plex Mono', monospace;
   }
   .signal {
     display: flex;
@@ -100,8 +101,9 @@ const accent = post.collection === 'music' ? '#a34a2f'
     gap: 6px;
     font-size: 10px;
     color: var(--ink-faint);
+    font-family: 'IBM Plex Mono', monospace;
   }
-  .signal .phase-name { color: var(--ink-dim); }
+  .signal .phase-name { color: var(--ink-dim); font-family: 'IBM Plex Mono', monospace; }
   .signal .date { color: var(--ink-faint); }
 
   .card[data-type="music"] { border-left: 2px solid var(--rust); }
@@ -156,8 +158,6 @@ const accent = post.collection === 'music' ? '#a34a2f'
     font-size: 13px;
     color: var(--ink-dim);
     font-family: 'Fraunces', serif;
-    font-style: italic;
-    box-sizing: border-box;
   }
 
   .body-music {
