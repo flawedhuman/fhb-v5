@@ -1,0 +1,17 @@
+:root{
+    --bg: #0c0908;
+    --surface: #17120e;
+    --surface-2: #1f1811;
+    --amber: #e2a23a;
+    --amber-dim: #8a5f22;
+    --rust: #a34a2f;
+    --ink: #ece3d3;
+    --ink-dim: #948a7c;
+    --ink-faint: #5c534a;
+    --line: #2a2320;
+  }
+
+body{
+    background-color: var(--bg);
+    color: var(--ink);
+}
