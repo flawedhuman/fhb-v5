@@ -1,11 +1,18 @@
 ---
+import type { CollectionEntry } from 'astro:content';
 import { moonPhase, moonSVG, formatDate } from '../utils/moon.js';
 import { typeIcon } from '../utils/icons.js';
 
-const { post } = Astro.props;
+interface Props {
+  post: CollectionEntry<'thoughts' | 'art' | 'music' | 'design-work'>;
+  index: number;
+  total: number;
+}
+
+const { post, index, total } = Astro.props;
 const moon = moonPhase(post.data.date);
 const accent = post.collection === 'music' ? '#a34a2f'
-  : post.collection === 'design' ? '#c9b48a'
+  : post.collection === 'design-work' ? '#c9b48a'
   : '#e2a23a';
 ---
 
@@ -19,6 +26,221 @@ const accent = post.collection === 'music' ? '#a34a2f'
       <span class="phase-name">{moon.name}</span>
       <span class="date">{formatDate(post.data.date)}</span>
     </div>
+    <span class="card-index">{String(index + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}</span>
   </div>
-  <!-- rest of card -->
+
+  {post.collection === 'thoughts' && (
+    <div class="body-thought">
+      <slot />
+    </div>
+  )}
+
+  {post.collection === 'art' && post.data.coverImage && (
+    <div class="body-art">
+      <img src={post.data.coverImage.src} alt={post.data.title} />
+      <div class="cap">{post.data.description}</div>
+    </div>
+  )}
+
+  {post.collection === 'music' && (
+    <>
+      <div class="body-music">
+        <button class="play-btn" aria-label="Play">&#9654;</button>
+        <div class="waveform">
+          {Array.from({ length: 38 }).map(() => <span />)}
+        </div>
+      </div>
+      <div class="track-title">{post.data.title}</div>
+    </>
+  )}
+
+  {post.collection === 'design-work' && (
+    <div class="body-design">
+      <div class="headline">{post.data.title}</div>
+      <div class="desc">{post.data.description}</div>
+      <div class="tag-row">
+        {post.data.tags?.map((tag) => <span class="tag">{tag}</span>)}
+      </div>
+    </div>
+  )}
+
+  <div class="card-foot">
+    <span>signal received, not archived</span>
+    <span class="foot-signal">
+      <span class="bars"><i></i><i></i><i></i></span>
+    </span>
+  </div>
 </div>
+
+<style>
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 22px 22px 20px;
+    position: relative;
+    transition: border-color 0.4s ease, transform 0.3s ease;
+  }
+  .card:hover { border-color: #3a2f27; }
+
+  .card-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .card-index {
+    font-size: 10px;
+    color: var(--ink-faint);
+    letter-spacing: 0.05em;
+  }
+  .signal {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    color: var(--ink-faint);
+  }
+  .signal .phase-name { color: var(--ink-dim); }
+  .signal .date { color: var(--ink-faint); }
+
+  .card[data-type="music"] { border-left: 2px solid var(--rust); }
+  .card[data-type="art"] {
+    padding: 0;
+    overflow: hidden;
+    width: 100vw;
+    max-width: 100vw;
+    position: relative;
+    left: 50%;
+    margin-left: -50vw;
+    border-left: none;
+    border-right: none;
+    border-radius: 0;
+  }
+  .card[data-type="art"] .card-head {
+    max-width: 640px;
+    margin: 0 auto 14px;
+    padding: 22px 22px 0;
+    box-sizing: border-box;
+  }
+  .card[data-type="art"] .card-foot {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 14px 22px 18px;
+    box-sizing: border-box;
+  }
+
+  .body-thought {
+    font-family: 'Fraunces', serif;
+    font-optical-sizing: auto;
+    font-variation-settings: 'WONK' 1, 'SOFT' 20;
+    font-weight: 420;
+    font-size: 19px;
+    line-height: 1.55;
+    color: var(--ink);
+    letter-spacing: 0.002em;
+  }
+
+  .body-art img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 596 / 300;
+    height: auto;
+    object-fit: cover;
+    filter: saturate(0.85) contrast(1.05);
+  }
+  .body-art .cap {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 14px 22px 20px;
+    font-size: 13px;
+    color: var(--ink-dim);
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    box-sizing: border-box;
+  }
+
+  .body-music {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .waveform {
+    flex: 1;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+  .waveform span {
+    flex: 1;
+    background: var(--rust);
+    opacity: 0.55;
+    border-radius: 1px;
+    height: 20px;
+  }
+  .waveform span:nth-child(3n) { opacity: 0.9; }
+  .play-btn {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--rust);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--rust);
+    flex-shrink: 0;
+    cursor: pointer;
+    background: transparent;
+  }
+  .track-title {
+    margin-top: 12px;
+    font-family: 'Fraunces', serif;
+    font-size: 16px;
+    color: var(--ink);
+  }
+
+  .body-design {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .body-design .headline {
+    font-family: 'Fraunces', serif;
+    font-size: 18px;
+    color: var(--ink);
+  }
+  .body-design .desc {
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: var(--ink-dim);
+  }
+  .tag-row {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    margin-top: 4px;
+  }
+  .tag {
+    font-size: 9.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    border: 1px solid var(--line);
+    padding: 4px 8px;
+    border-radius: 20px;
+  }
+
+  .card-foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+    font-size: 10px;
+    color: var(--ink-faint);
+    letter-spacing: 0.05em;
+  }
+  .foot-signal { display: flex; align-items: center; gap: 6px; }
+  .foot-signal .bars { display: flex; gap: 2px; align-items: flex-end; }
+  .foot-signal .bars i { display: block; width: 2px; background: var(--ink-faint); }
+  .foot-signal .bars i:nth-child(1) { height: 4px; }
+  .foot-signal .bars i:nth-child(2) { height: 6px; }
+  .foot-signal .bars i:nth-child(3) { height: 8px; background: var(--amber-dim); }
+</style>

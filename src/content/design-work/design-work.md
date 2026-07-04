@@ -3,7 +3,7 @@ title: "Terrible Gerald's — Event System Rebuild"
 date: 2026-06-13
 description: "Rebuilt the booking flow around a Storyblok-driven calendar."
 tags: ["astro", "storyblok", "client-work"]
-draft: true
+draft: false
 ---
 
 ## The problem

@@ -19,9 +19,8 @@ const posts = (await Promise.all(collections.map((name) => getCollection(name)))
 		<title>Astro</title>
 	</head>
 	<body>
-		<h1>Astro</h1>
-		{posts.map((post) => (
-			<PostCard post={post} />
+		{posts.map((post, index) => (
+			<PostCard post={post} index={index} total={posts.length} />
 		))}
 	</body>
 </html>

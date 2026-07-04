@@ -6,13 +6,23 @@
 // frontmatter, so if you forget a required field or typo a type, you'll get
 // a helpful error instead of a silent bug.
 
-import { defineCollection, z } from 'astro:content';
+import { defineCollection, z, type SchemaContext } from 'astro:content';
 import { glob } from 'astro/loaders';
 
 // Shared schema — every post across all four collections uses this same
 // shape. Fields marked .optional() don't need to appear in every post's
 // frontmatter; leave them out entirely when they don't apply.
-const postSchema = z.object({
+//
+// This is written as a function that receives `{ image }` rather than a
+// plain z.object(...) — that's what lets `coverImage` use Astro's image()
+// helper below. Astro only makes `image` available when the schema is
+// defined this way, and only when the referenced files live in src/assets
+// (not public/), since it needs to process them at build time.
+//
+// `SchemaContext` is Astro's own type for this function's parameter —
+// it's the correct way to type { image } without reaching into Zod's
+// internals ourselves (that's what caused the previous error).
+const postSchema = ({ image }: SchemaContext) => z.object({
   title: z.string(),
   date: z.coerce.date(),
 
@@ -23,9 +33,10 @@ const postSchema = z.object({
   soundcloudUrl: z.string().url().optional(),
   youtubeId: z.string().optional(),
 
-  // Path to an image in src/assets or public/, used as the feed thumbnail
-  // and/or full-post header image.
-  coverImage: z.string().optional(),
+  // Image in src/assets, resolved by Astro into an object with
+  // .src, .width, .height — used as the feed thumbnail and/or full-post
+  // header image. Astro handles resizing/format conversion automatically.
+  coverImage: image().optional(),
 
   // Escape hatch for quick tagging/filtering later without a schema change.
   tags: z.array(z.string()).optional(),
