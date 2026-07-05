@@ -8,4 +8,4 @@ draft: false
 Spent an hour today just looking at an empty content folder wondering
 what the first thing I post here should even be. Landed on: this.
 
-Sometimes the entry point is the point.
+Sometimes the entry point is the point. 
