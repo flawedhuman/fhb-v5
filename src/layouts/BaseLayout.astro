@@ -16,6 +16,55 @@ import '../styles/global.css';
 		<title>FHB</title>
 	</head>
 	<body>
-        <slot />
+		<div class="strip">
+			<span class="mark">FLAWED HUMAN BEING</span>
+			<span class="live"><span class="dot"></span>receiving</span>
+		</div>
+		<slot />
 	</body>
 </html>
+
+<style>
+	.strip{
+		margin-bottom: 2rem;
+		display:flex;
+		align-items:center;
+		justify-content: space-between;
+		padding: 22px clamp(20px, 6vw, 64px);
+		border-bottom: 1px solid var(--line);
+		font-size: 11px;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: var(--ink-faint);
+	}
+	.strip .mark{
+		color: var(--amber);
+		font-weight: 600;
+		letter-spacing: 0.02em;
+	}
+	.strip .live{
+		display:flex;
+		align-items:center;
+		gap:8px;
+		color: var(--ink-dim);
+	}
+	.live .dot{
+		width:6px; height:6px; border-radius:50%;
+		background: var(--amber);
+		box-shadow: 0 0 0 0 rgba(226,162,58,0.7);
+		animation: pulse 2.4s ease-in-out infinite;
+	}
+	@keyframes pulse{
+		0%{
+			box-shadow: 0 0 0 0 rgba(226,162,58,0.5);
+			transform: scale(1);
+		}
+		100%{
+			box-shadow: 0 0 0 9px rgba(226,162,58,0);
+			transform: scale(1.15);
+		}
+	}
+	@media (prefers-reduced-motion: reduce){
+		.live .dot{ animation: none; }
+	}
+</style>

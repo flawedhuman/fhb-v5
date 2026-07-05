@@ -11,26 +11,24 @@ export function moonPhase(date) {
   return { phase, illumination, name };
 }
 
-export function moonSVG(phase, color) {
-  const r = 16;
-  const cx = 20;
-  const cy = 20;
-  const w = 40;
-  const h = 40;
-  const pos = phase * 2;
-  let litPath = '';
+export function moonSVG(phase, color, bg = '#0c0908') {
+  const r = 8;
+  const cx = 10;
+  const cy = 10;
+  const w = 20;
+  const h = 20;
 
-  if (phase > 0.02 && phase < 0.98) {
-    if (pos <= 1) {
-      const x = cx + r - 2 * r * pos;
-      litPath = `<path d="M ${cx} ${cy - r} A ${r} ${r} 0 0 1 ${cx} ${cy + r} A ${Math.abs(x - cx)} ${r} 0 0 ${x > cx ? 0 : 1} ${cx} ${cy - r} Z" fill="none" stroke="${color}" stroke-width="1.2"/>`;
-    } else {
-      const x = cx - r + 2 * r * (pos - 1);
-      litPath = `<path d="M ${cx} ${cy - r} A ${r} ${r} 0 0 0 ${cx} ${cy + r} A ${Math.abs(x - cx)} ${r} 0 0 ${x < cx ? 0 : 1} ${cx} ${cy - r} Z" fill="none" stroke="${color}" stroke-width="1.2"/>`;
-    }
-  }
+  const lit = 1 - Math.abs(phase - 0.5) * 2;   // 0 at new moon, 1 at full moon
+  const dir = phase < 0.5 ? -1 : 1;             // which side the light grows from
+  const offset = (1 - lit) * r * 2 * dir;
+  const uid = 'moon' + Math.round(phase * 10000);
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" aria-hidden="true"><circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${color}" stroke-width="1.2"/>${litPath}</svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" aria-hidden="true">
+    <defs><clipPath id="${uid}"><circle cx="${cx}" cy="${cy}" r="${r}"/></clipPath></defs>
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="${color}"/>
+    <circle cx="${cx + offset}" cy="${cy}" r="${r}" fill="${bg}" clip-path="url(#${uid})"/>
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${color}" stroke-width="1" opacity="0.4"/>
+  </svg>`;
 }
 
 export function formatDate(date) {

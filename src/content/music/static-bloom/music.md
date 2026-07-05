@@ -3,8 +3,8 @@ title: "Static Bloom"
 date: 2026-07-03
 description: "First single off the new EP. Recorded in one take at 2am."
 coverImage: "./static-bloom.jpg"
-soundcloudUrl: "https://soundcloud.com/flawedhumanbeing/static-bloom"
-youtubeId: "dQw4w9WgXcQ"
+soundcloudUrl: "https://soundcloud.com/flawed-human-being/house-shoes-flip-sessions-8"
+youtubeId: "zxCWUajha-w"
 tags: ["single", "ep-teaser", "lo-fi"]
 draft: false
 ---

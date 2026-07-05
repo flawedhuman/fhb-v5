@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
 import { moonPhase, moonSVG, formatDate } from '../utils/moon.js';
 import { typeIcon } from '../utils/icons.js';
 
@@ -14,6 +15,10 @@ const moon = moonPhase(post.data.date);
 const accent = post.collection === 'music' ? '#a34a2f'
   : post.collection === 'design-work' ? '#c9b48a'
   : '#e2a23a';
+
+const scEmbedSrc = post.collection === 'music' && post.data.soundcloudUrl
+  ? `https://w.soundcloud.com/player/?url=${encodeURIComponent(post.data.soundcloudUrl)}&color=%23e2a23a&inverse=false&auto_play=false&show_user=true&visual=true`
+  : null;
 ---
 
 <div class="card" data-type={post.collection}>
@@ -37,32 +42,56 @@ const accent = post.collection === 'music' ? '#a34a2f'
 
   {post.collection === 'art' && post.data.coverImage && (
     <div class="body-art">
-      <img src={post.data.coverImage.src} alt={post.data.title} />
+      <Image
+        src={post.data.coverImage}
+        alt={post.data.title}
+        width={1200}
+        height={675}
+      />
       <div class="cap">{post.data.description}</div>
     </div>
   )}
 
-  {post.collection === 'music' && (
-    <>
-      <div class="body-music">
-        <button class="play-btn" aria-label="Play">&#9654;</button>
-        <div class="waveform">
-          {Array.from({ length: 38 }).map(() => <span />)}
-        </div>
-      </div>
-      <div class="track-title">{post.data.title}</div>
-    </>
+{post.collection === 'music' && (
+<div class="body-music">
+  {scEmbedSrc && (
+    <iframe
+      width="100%"
+      height="166"
+      src={scEmbedSrc}
+    ></iframe>
   )}
 
-  {post.collection === 'design-work' && (
-    <div class="body-design">
-      <div class="headline">{post.data.title}</div>
-      <div class="desc">{post.data.description}</div>
-      <div class="tag-row">
-        {post.data.tags?.map((tag) => <span class="tag">{tag}</span>)}
-      </div>
-    </div>
-  )}
+{post.data.youtubeId && (
+  <div class="video-embed">
+    <iframe
+      src={`https://www.youtube.com/embed/${post.data.youtubeId}`}
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      allowfullscreen
+    ></iframe>
+  </div>
+)}
+
+  <div class="track-title">{post.data.title}</div>
+
+  <div class="body-text">
+    <slot />
+  </div>
+</div>
+)}
+
+{post.collection === 'design-work' && (
+<div class="body-design">
+  <div class="headline">{post.data.title}</div>
+  <div class="desc">{post.data.description}</div>
+  <div class="tag-row">
+    {post.data.tags?.map((tag) => <span class="tag">{tag}</span>)}
+  </div>
+  <div class="body-text">
+    <slot />
+  </div>
+</div>
+)}
 
   <div class="card-foot">
     <span>signal received, not archived</span>
@@ -74,6 +103,8 @@ const accent = post.collection === 'music' ? '#a34a2f'
 
 <style>
   .card {
+    margin: 0 auto 2rem;
+    max-width: 640px;
     background: var(--surface);
     border: 1px solid var(--line);
     border-radius: 3px;
@@ -85,15 +116,22 @@ const accent = post.collection === 'music' ? '#a34a2f'
 
   .card-head {
     display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
+    align-items: center;
     margin-bottom: 16px;
+    gap: 10px;
+  }
+  .card-icon {
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   .card-index {
+    margin-left: auto;
     font-size: 10px;
     color: var(--ink-faint);
     letter-spacing: 0.05em;
-    font-family: 'IBM Plex Mono', monospace;
   }
   .signal {
     display: flex;
@@ -101,12 +139,29 @@ const accent = post.collection === 'music' ? '#a34a2f'
     gap: 6px;
     font-size: 10px;
     color: var(--ink-faint);
-    font-family: 'IBM Plex Mono', monospace;
   }
-  .signal .phase-name { color: var(--ink-dim); font-family: 'IBM Plex Mono', monospace; }
+  .signal .phase-name { color: var(--ink-dim); }
   .signal .date { color: var(--ink-faint); }
 
-  .card[data-type="music"] { border-left: 2px solid var(--rust); }
+  .card[data-type="music"] { 
+    border-left: 2px solid var(--rust); 
+    padding-left: 16px;
+  }
+
+  .video-embed {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+  }
+  .video-embed iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
   .card[data-type="art"] {
     padding: 0;
     overflow: hidden;
@@ -120,7 +175,6 @@ const accent = post.collection === 'music' ? '#a34a2f'
     border-radius: 0;
   }
   .card[data-type="art"] .card-head {
-    max-width: 640px;
     margin: 0 auto 14px;
     padding: 22px 22px 0;
     box-sizing: border-box;
@@ -146,7 +200,7 @@ const accent = post.collection === 'music' ? '#a34a2f'
   .body-art img {
     display: block;
     width: 100%;
-    aspect-ratio: 596 / 300;
+    aspect-ratio: 16 / 9;
     height: auto;
     object-fit: cover;
     filter: saturate(0.85) contrast(1.05);
@@ -162,34 +216,10 @@ const accent = post.collection === 'music' ? '#a34a2f'
 
   .body-music {
     display: flex;
-    align-items: center;
+    flex-direction: column;
     gap: 16px;
   }
-  .waveform {
-    flex: 1;
-    height: 44px;
-    display: flex;
-    align-items: center;
-    gap: 2px;
-  }
-  .waveform span {
-    flex: 1;
-    background: var(--rust);
-    opacity: 0.55;
-    border-radius: 1px;
-    height: 20px;
-  }
-  .waveform span:nth-child(3n) { opacity: 0.9; }
-  .play-btn {
-    width: 40px; height: 40px;
-    border-radius: 50%;
-    border: 1px solid var(--rust);
-    display: flex; align-items: center; justify-content: center;
-    color: var(--rust);
-    flex-shrink: 0;
-    cursor: pointer;
-    background: transparent;
-  }
+
   .track-title {
     margin-top: 12px;
     font-family: 'Fraunces', serif;

@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PostCard from '../components/PostCard.astro';
-import { getCollection } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 
 const collections = ['thoughts', 'art', 'music', 'design-work'] as const;
 const posts = (await Promise.all(collections.map((name) => getCollection(name))))
@@ -11,7 +11,12 @@ const posts = (await Promise.all(collections.map((name) => getCollection(name)))
 ---
 
 <BaseLayout title="FHB" description="Your home away from home.">
-	{posts.map((post, index) => (
-		<PostCard post={post} index={index} total={posts.length} />
-	))}
+	{await Promise.all(posts.map(async (post, index) => {
+		const { Content } = await render(post);
+		return (
+			<PostCard post={post} index={index} total={posts.length}>
+				<Content />
+			</PostCard>
+		);
+	}))}
 </BaseLayout>
