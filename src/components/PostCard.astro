@@ -43,11 +43,10 @@ const scEmbedSrc = post.collection === 'music' && post.data.soundcloudUrl
   {post.collection === 'art' && post.data.coverImage && (
     <div class="body-art">
       <Image
-        src={post.data.coverImage}
-        alt={post.data.title}
-        width={1200}
-        height={675}
-      />
+      src={post.data.coverImage}
+      alt={post.data.title}
+      inferSize
+    />
       <div class="cap">{post.data.description}</div>
     </div>
   )}
@@ -72,21 +71,32 @@ const scEmbedSrc = post.collection === 'music' && post.data.soundcloudUrl
   </div>
 )}
 
-  <div class="track-title">{post.data.title}</div>
+<div class="track-title">{post.data.title}</div>
 
-  <div class="body-text">
-    <slot />
-  </div>
+{post.data.coverImage && (
+  <Image
+      src={post.data.coverImage}
+      alt={post.data.title}
+      inferSize
+    />
+)}
+<div class="body-text">
+  <slot />
+</div>
 </div>
 )}
 
 {post.collection === 'design-work' && (
 <div class="body-design">
+  {post.data.coverImage && (
+    <Image
+      src={post.data.coverImage}
+      alt={post.data.title}
+      inferSize
+    />
+  )}
   <div class="headline">{post.data.title}</div>
   <div class="desc">{post.data.description}</div>
-  <div class="tag-row">
-    {post.data.tags?.map((tag) => <span class="tag">{tag}</span>)}
-  </div>
   <div class="body-text">
     <slot />
   </div>
@@ -119,6 +129,7 @@ const scEmbedSrc = post.collection === 'music' && post.data.soundcloudUrl
     align-items: center;
     margin-bottom: 16px;
     gap: 10px;
+    max-width: 640px;
   }
   .card-icon {
     width: 35px;
@@ -181,7 +192,7 @@ const scEmbedSrc = post.collection === 'music' && post.data.soundcloudUrl
   }
   .card[data-type="art"] .card-foot {
     max-width: 640px;
-    margin: 0 auto;
+    margin: 30px auto;
     padding: 14px 22px 18px;
     box-sizing: border-box;
   }
@@ -219,6 +230,13 @@ const scEmbedSrc = post.collection === 'music' && post.data.soundcloudUrl
     gap: 16px;
   }
 
+  .body-music img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 2px;
+  }
+
   .track-title {
     margin-top: 12px;
     font-family: 'Fraunces', serif;
@@ -231,6 +249,12 @@ const scEmbedSrc = post.collection === 'music' && post.data.soundcloudUrl
     flex-direction: column;
     gap: 10px;
   }
+  .body-design img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 2px;
+  }
   .body-design .headline {
     font-family: 'Fraunces', serif;
     font-size: 18px;
@@ -241,25 +265,12 @@ const scEmbedSrc = post.collection === 'music' && post.data.soundcloudUrl
     line-height: 1.6;
     color: var(--ink-dim);
   }
-  .tag-row {
-    display: flex; gap: 8px; flex-wrap: wrap;
-    margin-top: 4px;
-  }
-  .tag {
-    font-size: 9.5px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--ink-faint);
-    border: 1px solid var(--line);
-    padding: 4px 8px;
-    border-radius: 20px;
-  }
 
   .card-foot {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 18px;
+    margin-top: 30px;
     padding-top: 14px;
     border-top: 1px solid var(--line);
     font-size: 10px;
